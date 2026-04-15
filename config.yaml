@@ -1,0 +1,45 @@
+# Local dictation — edit paths and model for your machine
+#
+# Transcription: google = Gemini API (set GOOGLE_API_KEY in .env), local = faster-whisper
+transcription_provider: google
+google_model: gemini-2.5-flash
+# single = one API call with full audio when you release the hotkey (no live partial typing)
+# chunked = split on silence / max_chunk_seconds; type while still holding
+transcription_audio_mode: single
+# Ask the model to drop uh/um/false starts etc. (set false for verbatim transcripts)
+strip_filler_words: true
+#
+# Stronger models (faster-whisper / CTranslate2) when transcription_provider: local
+#   turbo (= large-v3-turbo) — best accuracy/speed tradeoff for most GPUs (recommended)
+#   distil-large-v3 — slightly lighter VRAM, still much better than small.en
+#   large-v3 — heaviest; use int8_float16 on 4GB VRAM
+# English-only lighter option: distil-medium.en
+model_size: turbo
+compute_type: float16
+# cuda needs CUDA 12 + cuBLAS (cublas64_12.dll). If you see DLL errors, use: device: cpu
+device: cuda
+language: en
+
+# null = default input device
+audio_device: null
+sample_rate: 16000
+
+# Hold both modifiers while speaking (pynput names: ctrl, cmd = Windows key)
+hotkey_modifiers:
+  - ctrl
+  - cmd
+
+# Process speech at least this many seconds before sending to Whisper
+min_speech_seconds: 0.35
+# After this many seconds of captured audio, run a partial transcribe even without VAD end
+max_chunk_seconds: 2.5
+# Silence (seconds) after speech to consider a segment ended (VAD threshold applied below)
+silence_end_seconds: 0.35
+
+vad_threshold: 0.5
+
+# Optional: folder for daily transcript logs (null to disable)
+transcript_log_dir: null
+
+# Require tray menu "Arm dictation" before hotkey works (reduces accidents)
+require_arm: false
